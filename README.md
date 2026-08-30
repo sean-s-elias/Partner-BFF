@@ -46,8 +46,8 @@ dotnet test
 
 Covers validation rules, the resilience/retry logic, and the partner verification service (mocked HTTP).
 
-## Notes / what I'd add with more time
+## what I'd add with more time
 
-- No idempotency check yet — same transaction can be submitted twice. In a real setup I'd have a consumer service persist processed transactions and check against that before accepting a new one.
-- No auth on the endpoint yet — would add JWT bearer auth in production.
-- Currency check uses a small hardcoded list, not a full ISO 4217 list.
+- To make this more properly event-driven, the ideal setup would be a separate consumer service that reads messages off the queue and persists processed transactions to a database. The producer would then check incoming transactions (partnerId + transactionReference) against that database before accepting them, to prevent duplicates.
+- **Securing the endpoint:** in production, this would be secured with JWT bearer authentication via Auth0. Auth0 would issue signed JWTs (client credentials flow for partner/machine-to-machine calls, or authorization code flow for user-facing clients), and the API would validate incoming tokens using JWT bearer middleware registered in `Program.cs`, with `[Authorize]` applied to the controller/endpoint. Beyond just authenticating the caller, I'd also define scopes (e.g. `transactions:write`) in Auth0 and enforce them with a policy (`[Authorize(Policy = "TransactionsWrite")]`), so a token is only accepted if it's actually been granted permission to submit transactions — not just any authenticated caller. This gives fine-grained control over what each partner/client is allowed to do, rather than an all-or-nothing authenticated/unauthenticated check. This wasn't implemented here given the time-boxed scope, but the endpoint is structured so it could be added without changing the core logic.
+
