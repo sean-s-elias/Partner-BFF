@@ -29,7 +29,7 @@ Api depends on Application + Persistence. Persistence depends on Application. Ap
 docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
 
-then run `PartnerBFF.Api` normally and open the Swagger URL it prints.
+then run `PartnerBFF.Api` normally and open the Swagger.
 
 ## Tests
 
