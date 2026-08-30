@@ -26,15 +26,9 @@ Api depends on Application + Persistence. Persistence depends on Application. Ap
 
 **With Docker:**
 ```
-docker compose up --build
-```
-API: http://localhost:8080/swagger
-RabbitMQ dashboard: http://localhost:15672 (guest/guest)
-
-**Without Docker:**
-```
 docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
+
 then run `PartnerBFF.Api` normally and open the Swagger URL it prints.
 
 ## Tests
