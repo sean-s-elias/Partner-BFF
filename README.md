@@ -4,13 +4,13 @@
 
 ## Architecture
 
-Split into 4 projects (Clean Architecture style):
+Split into 5 projects - Clean Architecture style
 
-- **PartnerBFF.Api** – controllers, middleware, startup config
-- **PartnerBFF.Application** – DTOs, interfaces, validation rules
-- **PartnerBFF.Persistence** – RabbitMQ publisher, partner verification client, Polly resilience policy
-- **PartnerBFF.Domain** – core domain model
-- **PartnerBFF.Tests** – unit tests
+- **PartnerBFF.Api**:  controllers, middleware, configuration
+- **PartnerBFF.Application**: DTOs, interfaces, validation rules
+- **PartnerBFF.Persistence**:  RabbitMQ publisher, partner verification client, Polly resilience policy
+- **PartnerBFF.Domain**:  core domain model
+- **PartnerBFF.Tests**: unit tests
 
 Api depends on Application + Persistence. Persistence depends on Application. Application has no dependencies on the others — this keeps business rules separate from infrastructure (RabbitMQ, HTTP calls, etc), so those could be swapped out later without touching the core logic.
 
