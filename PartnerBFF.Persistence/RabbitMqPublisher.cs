@@ -6,7 +6,7 @@ using RabbitMQ.Client;
 
 namespace PartnerBFF.Persistence;
 
-public class RabbitMqPublisher : IMessagePublisher, IDisposable
+public class RabbitMqPublisher : IMessagePublisher, IAsyncDisposable
 {
     private const string QueueName = "partner-transactions";
     private readonly IConnection _connection;
@@ -33,14 +33,9 @@ public class RabbitMqPublisher : IMessagePublisher, IDisposable
         await _channel.BasicPublishAsync(exchange: "", routingKey: QueueName, body: body);
     }
 
-    private async ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _channel.CloseAsync();
         await _connection.CloseAsync();
-    }
-
-    public void Dispose()
-    {
-        DisposeAsync().GetAwaiter().GetResult(); 
     }
 }

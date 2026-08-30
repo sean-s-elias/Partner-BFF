@@ -19,7 +19,7 @@ public class TransactionRequestValidator : AbstractValidator<TransactionRequest>
         RuleFor(x => x.Currency)
             .NotEmpty().WithMessage("Currency is required.")
             .Must(x => Enum.TryParse<Currency>(x, ignoreCase: true, out _))
-            .WithMessage("Currency is not a recognized/valid currency code.");
+            .WithMessage("Currency is not a valid currency code.");
 
         RuleFor(x => x.Timestamp)
             .NotEqual(default(DateTime)).WithMessage("Timestamp is required.");
