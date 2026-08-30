@@ -30,11 +30,11 @@ public class PartnerController : ControllerBase
         if (!verification.IsVerified)
         {
             _logger.LogWarning("Partner verification failed for {PartnerId}", request.PartnerId);
-            return BadRequest(new {  message = "Partner verification failed." });
+            return BadRequest(new ApiResponse { Success = false, Message = "Partner verification failed." });
         }
 
         await _messagePublisher.PublishAsync(request);
         
-        return Ok(new {message = "Partner verification completed." });    
+        return Ok(new ApiResponse { Success = true, Message = "Transaction accepted and queued." });
     }
 }
