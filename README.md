@@ -40,7 +40,7 @@ dotnet test
 
 Covers validation rules, the resilience/retry logic, and the partner verification service (mocked HTTP).
 
-## what I'd add with more time
+## What I'd add with more time
 
 - To make this more properly event-driven, the ideal setup would be a separate consumer service that reads messages off the queue and persists processed transactions to a database. The producer would then check incoming transactions (partnerId + transactionReference) against that database before accepting them, to prevent duplicates.
 - Securing the endpoint: in production, this would be secured with JWT Bearer authentication via Auth0. Auth0 would issue signed JWTs (Client Credentials flow for partner/machine-to-machine calls, or Authorization Code flow for user-facing clients), and the API would validate incoming tokens using JWT Bearer middleware registered in Program.cs, with [Authorize] applied to the controller/endpoint. Beyond authentication, I'd also define scopes (e.g. transactions:write) in Auth0 and enforce them with a policy ([Authorize(Policy = "TransactionsWrite")]), so a token is only accepted if it has actually been granted permission to submit transactions. This provides fine-grained control over what each partner/client is allowed to do, rather than an all-or-nothing authenticated/unauthenticated check. This wasn't implemented here due to the time-boxed scope, but the endpoint is structured so it could be added without changing the core logic.
