@@ -1,6 +1,7 @@
 using PartnerBFF.Application;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
+using Polly.CircuitBreaker;
 
 namespace PartnerBFF.Persistence;
 
@@ -17,14 +18,26 @@ public class PartnerVerificationService : IPartnerVerificationService
     
     public async Task<PartnerVerificationResponse> VerifyPartnerAsync(string partnerId)
     {
-        var response = await _httpClient.GetFromJsonAsync<PartnerVerificationResponse>(
-            $"partnerVerify?partnerId={partnerId}");
-
-        if (response == null)
+        try
         {
-            _logger.LogError("Could not verify partner with id {partnerId}", partnerId);
+            var response = await _httpClient.GetAsync($"partnerVerify?partnerId={partnerId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<PartnerVerificationResponse>() 
+                       ?? new() { PartnerId = partnerId };
+            }
+        }
+        catch (BrokenCircuitException ex)
+        {
+            _logger.LogWarning("Circuit breaker is OPEN: {Message}", ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Verification failed for {PartnerId}", partnerId);
         }
 
-        return response ?? throw new InvalidOperationException("Partner verification returned no data.");
+        // Fallback: One clean return statement for all failures/errors
+        return new() { IsVerified = false, PartnerId = partnerId };
     }
 }
